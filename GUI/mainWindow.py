@@ -1,47 +1,101 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Main.ui'
-#
-# Created by: PyQt5 UI code generator 5.6
-#
-# WARNING! All changes made in this file will be lost!
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from GUI.annotationWidget import Ui_annoWidget
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+class Ui_mainWindow(QMainWindow):
 
-class Ui_MainWindow(object):
-	def setupUi(self, MainWindow):
-		MainWindow.setObjectName("MainWindow")
-		MainWindow.resize(800, 600)
+	def __init__(self):
+		super().__init__()
+		self.initUI()
 
-		self.menubar = QtWidgets.QMenuBar(MainWindow)
-		self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
-		self.menubar.setObjectName("menubar")
-		self.menuFile = QtWidgets.QMenu(self.menubar)
-		self.menuFile.setObjectName("menuFile")
-		self.menuHelp = QtWidgets.QMenu(self.menubar)
-		self.menuHelp.setObjectName("menuHelp")
+	def initUI(self):
 
-		self.actionOpen = QtWidgets.QAction(MainWindow)
-		self.actionOpen.setObjectName("actionOpen")
-		self.actionExit = QtWidgets.QAction(MainWindow)
-		self.actionExit.setObjectName("actionExit")
-		self.actionAbout_Shadow = QtWidgets.QAction(MainWindow)
-		self.actionAbout_Shadow.setObjectName("actionAbout_Shadow")
+		# mainWindow
+		self.setGeometry(200, 200, 800, 600)
+		self.setWindowTitle("Shadow")
+		self.setWindowIcon(QIcon("Resources/shadow.ico"))
+		self.statusBar()
 
-		self.menuFile.addAction(self.actionOpen)
-		self.menuFile.addAction(self.actionExit)
-		self.menuHelp.addAction(self.actionAbout_Shadow)
-		self.menubar.addAction(self.menuFile.menuAction())
-		self.menubar.addAction(self.menuHelp.menuAction())
+		# menu
+		openAction = QAction("Open", self)
+		openAction.setShortcut("Ctrl+O")
+		openAction.setStatusTip("Open")
+		openAction.triggered.connect(self.showOpenDialog)
+		saveAction = QAction("Save", self)
+		saveAction.setShortcut("Ctrl+S")
+		saveAction.setStatusTip("Save")
+		saveAction.triggered.connect(self.showSaveDialog)
+		exitAction = QAction("Exit", self)
+		exitAction.setShortcut("Ctrl+Q")
+		exitAction.setStatusTip("Exit")
+		exitAction.triggered.connect(qApp.quit)
 
-		self.retranslateUi(MainWindow)
-		QtCore.QMetaObject.connectSlotsByName(MainWindow)
+		annoAction = QAction("Annotation", self)
+		annoAction.setStatusTip("Annotation")
+		annoAction.triggered.connect(self.showAnnoWidget)
 
-	def retranslateUi(self, MainWindow):
-		_translate = QtCore.QCoreApplication.translate
-		MainWindow.setWindowTitle(_translate("MainWindow", "Shadow"))
-		self.menuFile.setTitle(_translate("MainWindow", "File"))
-		self.menuHelp.setTitle(_translate("MainWindow", "Help"))
-		self.actionOpen.setText(_translate("MainWindow", "Open"))
-		self.actionExit.setText(_translate("MainWindow", "Exit"))
-		self.actionAbout_Shadow.setText(_translate("MainWindow", "About Shadow"))
+		docAction = QAction("Document", self)
+		docAction.setStatusTip("Document")
+		aboutAction = QAction("About Shadow", self)
+		aboutAction.setStatusTip("About Shadow")
+		aboutAction.triggered.connect(self.selectAbout)
+
+		menubar = self.menuBar()
+		fileMenu = menubar.addMenu("File")
+		fileMenu.addAction(openAction)
+		fileMenu.addAction(saveAction)
+		fileMenu.addAction(exitAction)
+		toolsMenu = menubar.addMenu("Tools")
+		toolsMenu.addAction(annoAction)
+		helpMenu = menubar.addMenu("Help")
+		helpMenu.addAction(docAction)
+		helpMenu.addAction(aboutAction)
+
+		#central tab widget
+		self.tabWidget = QTabWidget()
+		self.setCentralWidget(self.tabWidget)
+		self.tabWidget.setTabsClosable(True)
+
+		self.textEdit = QTextEdit()
+		self.tabWidget.addTab(self.textEdit, "File")
+		self.show()
+
+	def closeEvent(self, event):
+		reply = QMessageBox.question(self, "Message", "You sure to quit?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+		if reply == QMessageBox.Yes:
+			event.accept()
+		else:
+			event.ignore()
+
+	def showOpenDialog(self):
+		fileName = QFileDialog.getOpenFileName(self, "Open file", "./")
+		try:
+			file = open(fileName[0], "r")
+			data = file.read()
+		except UnicodeDecodeError:
+			data = "Not a valid file..."
+		except FileNotFoundError:
+			data = "File not found..."
+		except IndexError:
+			data = ""
+		self.textEdit.setText(data)
+
+	def showSaveDialog(self):
+		fileName = QFileDialog.getSaveFileName(self, "Save file", "./")
+		try:
+			file = open(fileName[0], "w")
+			data = file.write(self.textEdit.toPlainText())
+		except UnicodeDecodeError:
+			data = "Not a valid file..."
+		except FileNotFoundError:
+			data = "File not found..."
+
+	def showAnnoWidget(self):
+		annoWidget = Ui_annoWidget()
+		self.tabWidget.addTab(annoWidget, "Annotation")
+		self.tabWidget.setCurrentIndex(self.tabWidget.currentIndex()+1)
+
+	def selectAbout(self):
+		QMessageBox.about(self, "About Shadow", "Copyright @ 2017 Wenlong Shen\n All Right reserved.")

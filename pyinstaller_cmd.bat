@@ -2,5 +2,4 @@ pyinstaller --noconfirm --onefile --windowed --distpath ./ --icon ./Resources/sh
 
 rm Shadow.spec
 rm -r __pycache__
-rm -r ./GUI/__pycache__
 rm -r build
