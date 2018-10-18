@@ -1,5 +1,5 @@
-pyinstaller --noconfirm --onefile --windowed --distpath ./ --icon ./Resources/shadow.ico --clean Shadow.py
+pyinstaller --noconfirm --onefile --windowed --distpath ./ --icon ./resources/shadow.ico --clean shadow.py
 
-rm Shadow.spec
+rm shadow.spec
 rm -r __pycache__
 rm -r build
