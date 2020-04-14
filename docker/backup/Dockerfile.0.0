@@ -1,0 +1,35 @@
+############################################################
+# Dockerfile for Shadow
+# Shen @ data analysis on genome-wide studies
+############################################################
+
+# Base image
+FROM continuumio/miniconda3:4.7.12
+
+# Maintainer
+MAINTAINER Wenlong Shen <shenwl1988@gmail.com>
+
+# Install prerequisites
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+        r-base && \
+    apt-get clean && apt-get purge && rm -rf /var/lib/apt/lists/* /tmp/*
+
+# Set timezone
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata
+    
+# Set up bioconda channels
+RUN conda config --add channels defaults && \
+    conda config --add channels bioconda && \
+    conda config --add channels conda-forge && \
+    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
+    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
+    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
+    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/
+
+# Install packages
+RUN conda install samtools bedtools deeptools picard \
+        fastp bwa -q -y && \
+    conda clean -a -q -y
+
