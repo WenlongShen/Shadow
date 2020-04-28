@@ -3,8 +3,6 @@
 # settings
 source settings.config
 
-samples=$(echo -e ${samples} | tr "," "\n")
-
 # QC and clean data
 if [ ! -d ${cleandata_dir} ]; then
 	mkdir -p ${cleandata_dir}
@@ -12,7 +10,7 @@ fi
 
 start_time=$(date +%s)
 
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	${fastp} --in1 ${rawdata_dir}/${sample}.R1.fq.gz --in2 ${rawdata_dir}/${sample}.R2.fq.gz \
 		--out1 ${cleandata_dir}/${sample}.R1.clean.fq.gz --out2 ${cleandata_dir}/${sample}.R2.clean.fq.gz \
 		-R ${sample} -h ${cleandata_dir}/${sample}.qc.html -j ${cleandata_dir}/${sample}.qc.json
@@ -30,7 +28,7 @@ fi
 
 start_time=$(date +%s)
 
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	if [ "${aligner}" = "bwa" ]; then
 		ID=${sample}_RG # Read Group, or Lane ID
 		PL=ILLUMINA # ILLUMINA, SLX, SOLEXA, SOLID, 454, LS454, COMPLETE, PACBIO, IONTORRENT, CAPILLARY, HELICOS, UNKNOWN
@@ -53,7 +51,7 @@ echo -e "\nDONE mapping.\nTime taken to execute commands is ${running_time} seco
 # mark/remove duplicates
 start_time=$(date +%s)
 
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	${gatk} MarkDuplicatesSpark \
 		-I ${mapping_dir}/${sample}.bam \
 		-O ${mapping_dir}/${sample}.markdup.bam \
@@ -70,7 +68,7 @@ echo -e "\nDONE mark/remove duplicates.\nTime taken to execute commands is ${run
 # fix tags
 start_time=$(date +%s)
 
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	${gatk} FixMateInformation \
 		-I ${mapping_dir}/${sample}.markdup.bam \
 		-O ${mapping_dir}/${sample}.markdup.fixmate.bam \
@@ -96,7 +94,7 @@ fi
 
 start_time=$(date +%s)
 
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	${gatk} BaseRecalibrator \
 		-R ${reference_fa} \
 		--known-sites ${dbsnp} \
@@ -125,7 +123,7 @@ fi
 
 start_time=$(date +%s)
 
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	${gatk} HaplotypeCaller \
 		-R ${reference_fa} \
 		-ERC GVCF \
@@ -143,7 +141,7 @@ echo -e "\nDONE HaplotypeCaller.\nTime taken to execute commands is ${running_ti
 start_time=$(date +%s)
 
 sample_gvcfs=""
-for sample in ${samples}; do
+for sample in ${samples[*]}; do
 	sample_gvcfs=${sample_gvcfs}"-V ${hc_dir}/${sample}.hc.g.vcf.gz "
 done
 

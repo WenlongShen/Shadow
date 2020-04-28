@@ -5,7 +5,7 @@
 ############################################################
 
 # Base image
-FROM broadinstitute/gatk:4.1.5.0
+FROM broadinstitute/gatk:4.1.7.0
 
 # Maintainer
 MAINTAINER Wenlong Shen <shenwl1988@gmail.com>
