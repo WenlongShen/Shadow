@@ -379,36 +379,6 @@ if [ "${annotation}" = "funcotator" ]; then
 fi
 
 # annotate variants
-if [ "${annotation}" = "funcotator" ]; then
-	if [ ! -d ${vqsr_dir} ]; then
-		mkdir -p ${anno_dir}
-	fi
-
-	start_time=$(date +%s)
-
-	input_vcf=""
-	if [ "${filtration_vqsr}" = "true" ]; then
-		input_vcf=${final_vcf_dir}/${project_name}.hc.vqsr_filt.vcf.gz
-	fi
-	if [ "${filtration_hard}" = "true" ]; then
-		input_vcf=${final_vcf_dir}/${project_name}.hc.hard_filt.vcf.gz
-	fi
-	output=`basename input_vcf`
-	output=${output%%.vcf.gz}
-
-	VEP --fasta $reference/Homo_sapiens_assembly38.fasta \
-		--vcf --merged --fork ${threads} --hgvs --force_overwrite --everything \
-		--offline --dir_cache ${annotation_vep} \
-		-i ${input_vcf} \
-		-o ${anno_dir}/${output}.anno_vep.vcf
-
-	end_time=$(date +%s)
-	running_time=$((${end_time}-${start_time}))
-	echo -e "\nDONE annotation with VEP.\nTime taken to execute commands is ${running_time} seconds.\n"
-
-fi
-
-# annotate variants
 if [ "${annotation}" = "vep" ]; then
 	if [ ! -d ${anno_dir} ]; then
 		mkdir -p ${anno_dir}
