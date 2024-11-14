@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # settings
-source settings.config
+source settings_wgs.config
+
 
 # QC and clean data
 if [ ! -d ${cleandata_dir} ]; then

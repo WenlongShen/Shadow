@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # settings
-source hic.settings.config
+source settings_hic.config
 
 
 # QC and clean the raw sequence data

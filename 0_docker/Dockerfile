@@ -1,10 +1,11 @@
 ############################################################
-# Dockerfile for Shadow
-# Shen @ data analysis on genome-wide studies
+# Dockerfile for shadow
+# Shen @ Biological Data Analysis
+# Version 0.4
 ############################################################
 
 # Base image
-FROM continuumio/miniconda3:4.7.12
+FROM broadinstitute/gatk:4.6.1.0
 
 # Maintainer
 MAINTAINER Wenlong Shen <shenwl1988@gmail.com>
@@ -20,16 +21,13 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
     
 # Set up bioconda channels
-RUN conda config --add channels defaults && \
-    conda config --add channels bioconda && \
+RUN conda config --add channels bioconda && \
     conda config --add channels conda-forge && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/
+    conda config --set channel_priority strict
 
 # Install packages
-RUN conda install samtools bedtools deeptools picard \
-        fastp bwa -q -y && \
+RUN conda install conda-libmamba-solver \
+                  samtools bedtools deeptools picard fastp \
+                  bwa bowtie2 hisat2 stringtie hicexplorer macs3 chip-r -q -y && \
     conda clean -a -q -y
-
+    

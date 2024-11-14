@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # settings
-source rna.settings.config
+source settings_rna.config
 
 
 # QC and clean the raw sequence data
@@ -94,6 +94,8 @@ for sample in ${samples[*]}; do
 					-A ${stringtie_dir}/${sample}.abund.txt \
 					-p ${threads}
 done
+
+${run_cmd} python ${prepDE} -i ${stringtie_dir} -g ${stringtie_dir}/gene_count_matrix.csv -t ${stringtie_dir}/transcript_count_matrix.csv
 
 end_time=$(date +%s)
 running_time=$((${end_time}-${start_time}))
