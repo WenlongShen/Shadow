@@ -4,10 +4,10 @@ Shen @ Biological Data Analysis
 
 I am currently focusing and analyzing data in the following application areas:
 
-Multi-omics data integration and interpretation 
-Statistical data analysis and programming
-Data plotting and visualization
-Macromolecular modeling and design
+* Multi-omics data integration and interpretation
+* Statistical data analysis and programming
+* Data plotting and visualization
+* Macromolecular modeling and design
 
 
 ## Dockers
